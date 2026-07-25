@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Page Pulse — audit any URL's vitals</title>
+<meta name="description" content="Enter a URL and get an instant health report: status, response time, SEO basics, accessibility, and a composite Pulse Score." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<div class="wrap">
+
+  <header class="monitor-plate">
+    <div class="brand">
+      <span class="brand-mark">Page<span class="dot">•</span>Pulse</span>
+      <span class="brand-sub">web vitals monitor</span>
+    </div>
+    <div class="live-indicator"><span class="live-dot"></span> ready</div>
+  </header>
+
+  <form id="audit-form" class="intake" autocomplete="off">
+    <input
+      id="url-input"
+      type="text"
+      inputmode="url"
+      placeholder="Enter a URL to scan, e.g. example.com/pricing"
+      aria-label="URL to audit"
+      required
+    />
+    <button type="submit" id="scan-btn">Run scan</button>
+  </form>
+  <div class="intake-hint">Any public http(s) page. We check status, timing, SEO basics, accessibility, and content signals.</div>
+
+  <div id="banner" class="banner" role="alert"></div>
+
+  <section id="waveform-panel" class="waveform-panel" aria-live="polite">
+    <div class="waveform-head">
+      <span class="label">Pulse Score</span>
+      <div class="pulse-readout">
+        <span class="score" id="score-value">--</span>
+        <span class="grade" id="grade-value">-</span>
+        <span class="status-label" id="status-label"></span>
+      </div>
+    </div>
+    <svg class="ekg" id="ekg-svg" viewBox="0 0 800 130" preserveAspectRatio="none">
+      <path class="ekg-glow" id="ekg-glow" d="" />
+      <path class="ekg-path" id="ekg-path" d="" />
+    </svg>
+  </section>
+
+  <div id="tiles" class="tiles"></div>
+
+  <div id="empty-state" class="empty-state">
+    <svg class="flatline" viewBox="0 0 200 40" preserveAspectRatio="none">
+      <path d="M0,20 L80,20 L90,5 L100,35 L110,20 L200,20" fill="none" stroke="currentColor" stroke-width="2" />
+    </svg>
+    <p>No scan yet. Enter a URL above and run a scan to see its vitals.</p>
+  </div>
+
+  <button id="raw-toggle" class="raw-toggle" style="display:none;">Show raw JSON</button>
+  <pre id="raw-json" class="raw-json"></pre>
+
+  <footer>
+    <span>Page Pulse — <a href="/docs">API docs</a></span>
+    <span>Built for <a href="https://digitalheroesco.com" target="_blank" rel="noopener">Digital Heroes Training Task</a></span>
+  </footer>
+
+</div>
+<script src="/app.js"></script>
+</body>
+</html>

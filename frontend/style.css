@@ -1,0 +1,418 @@
+/* Page Pulse — visual language borrowed from a hospital cardiac monitor.
+   The product audits a page's "vitals," so the interface reads its results
+   the way a monitor reads a patient's: a scrolling waveform, a bank of
+   numeric readouts, and the same three-color status coding (green/amber/
+   red) clinicians actually use to triage at a glance. */
+
+:root {
+  --bg: #0a0f0d;
+  --bezel: #121917;
+  --grid-line: #17211e;
+  --panel-border: #223029;
+  --text-primary: #e7f2ec;
+  --text-muted: #7c9188;
+  --good: #34e07a;
+  --warn: #ffb648;
+  --bad: #ff5c5c;
+  --accent: #34e07a;
+
+  --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  min-height: 100%;
+}
+
+body {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: center top;
+}
+
+.wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+/* ---------- Header / bezel plate ---------- */
+
+.monitor-plate {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--panel-border);
+  padding-bottom: 18px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.brand-mark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.55rem;
+  letter-spacing: -0.01em;
+}
+
+.brand-mark .dot {
+  color: var(--good);
+}
+
+.brand-sub {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.live-indicator {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--good);
+  box-shadow: 0 0 6px var(--good);
+  animation: blink 2.4s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* ---------- Intake / URL form ---------- */
+
+.intake {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.intake input {
+  flex: 1;
+  background: var(--bezel);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  padding: 14px 16px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.intake input::placeholder {
+  color: var(--text-muted);
+}
+
+.intake input:focus {
+  border-color: var(--good);
+}
+
+.intake button {
+  background: var(--good);
+  color: #06130c;
+  border: none;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0 26px;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.05s ease;
+  white-space: nowrap;
+}
+
+.intake button:hover { filter: brightness(1.08); }
+.intake button:active { transform: scale(0.98); }
+
+.intake button:disabled {
+  background: var(--panel-border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.intake-hint {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 30px;
+}
+
+/* ---------- Waveform ---------- */
+
+.waveform-panel {
+  background: var(--bezel);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 0;
+  margin-bottom: 22px;
+  overflow: hidden;
+  display: none;
+}
+
+.waveform-panel.visible { display: block; }
+
+.waveform-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px 0;
+}
+
+.waveform-head .label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.pulse-readout {
+  font-family: var(--font-display);
+  font-weight: 700;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.pulse-readout .score {
+  font-size: 2.6rem;
+  line-height: 1;
+}
+
+.pulse-readout .grade {
+  font-size: 1.1rem;
+  padding: 3px 10px;
+  border-radius: 5px;
+  border: 1px solid currentColor;
+}
+
+.pulse-readout .status-label {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  align-self: center;
+}
+
+svg.ekg {
+  width: 100%;
+  height: 130px;
+  display: block;
+}
+
+.ekg-path {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ekg-glow {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.25;
+  filter: blur(2px);
+}
+
+/* ---------- Metric tiles ---------- */
+
+.tiles {
+  display: none;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.tiles.visible { display: grid; }
+
+.tile {
+  background: var(--bezel);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+
+.tile-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.tile-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.good { background: var(--good); box-shadow: 0 0 6px var(--good); }
+.status-dot.warn { background: var(--warn); box-shadow: 0 0 6px var(--warn); }
+.status-dot.bad  { background: var(--bad);  box-shadow: 0 0 6px var(--bad); }
+.status-dot.neutral { background: var(--panel-border); }
+
+.tile-value {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  word-break: break-word;
+}
+
+.tile-sub {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* ---------- Warnings / errors ---------- */
+
+.banner {
+  display: none;
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+
+.banner.visible { display: block; }
+
+.banner.error {
+  background: rgba(255, 92, 92, 0.08);
+  border: 1px solid rgba(255, 92, 92, 0.35);
+  color: #ffb3b3;
+}
+
+.banner.warn {
+  background: rgba(255, 182, 72, 0.08);
+  border: 1px solid rgba(255, 182, 72, 0.35);
+  color: #ffd9a0;
+}
+
+/* ---------- Empty state ---------- */
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  border: 1px dashed var(--panel-border);
+  border-radius: 8px;
+}
+
+.empty-state .flatline {
+  width: 200px;
+  height: 40px;
+  margin: 0 auto 18px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+/* ---------- Raw JSON toggle ---------- */
+
+.raw-toggle {
+  background: none;
+  border: 1px solid var(--panel-border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.raw-toggle:hover { border-color: var(--text-muted); color: var(--text-primary); }
+
+pre.raw-json {
+  display: none;
+  background: var(--bezel);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  overflow-x: auto;
+  color: var(--text-muted);
+}
+
+pre.raw-json.visible { display: block; }
+
+/* ---------- Footer ---------- */
+
+footer {
+  margin-top: 50px;
+  padding-top: 18px;
+  border-top: 1px solid var(--panel-border);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+footer a {
+  color: var(--good);
+  text-decoration: none;
+}
+
+footer a:hover { text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot { animation: none; }
+  svg.ekg path { animation: none !important; }
+}
+
+@media (max-width: 560px) {
+  .intake { flex-direction: column; }
+  .intake button { padding: 14px; }
+  .monitor-plate { flex-direction: column; align-items: flex-start; }
+}
